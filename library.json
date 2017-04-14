@@ -1,0 +1,14 @@
+{
+  "name": "EADOG",
+  "keywords": "mbed, lcd, EA DOG, EA DOGl128, EA DOGM128, EA DOGM132, Electronic Assembly",
+  "description": "A library for the LCDs from Electronic Assembly. EA DOGL128, EA DOGM128, EA DOGM132",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/sstaub/EADOG"
+  },
+  "version": "1.0.0",
+  "frameworks": "mbed",
+  "platforms": "*"
+}
+
