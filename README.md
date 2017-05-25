@@ -129,6 +129,11 @@ int main() {
 
 ## Documentation
 
+### Types
+- DOGM128
+- DOGM132
+- DOGL128
+
 ### Constructor
 
 **EADOG(PinName mosi, PinName sck, PinName reset, PinName a0, PinName cs, uint8_t type)**<br>
