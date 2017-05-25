@@ -45,7 +45,7 @@ enum {MANUAL, AUTO};
   * @param TOPVIEW rotate the screento 180°
   *
   */
-enum {ON, OFF, SLEEP, DEFAULT, INVERT, BOTTOM, TOPVIEW, CONTRAST, RST};
+enum {ON, OFF, SLEEP, DEFAULT, INVERT, BOTTOM, TOPVIEW, CONTRAST};
 
 /** bitmap
   *
