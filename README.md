@@ -178,7 +178,7 @@ display functions<br>
 >**Parameter display**<br>
 >CONTRAST set diplay contrast<br>
 >**Parameter value**<br>
->value -> set the contrast value from 0 to 64, default is 31
+>value -> set the contrast value from 0 to 63, default is 31
 
 **void fillcircle(int x, int y, int r, uint8_t colour)**<br>
 draw a filled circle<br>
