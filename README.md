@@ -173,6 +173,13 @@ display functions<br>
 >DEFAULT normal pixel display<br>
 >CONTRAST set display contrast to default<br>
 
+**void display(uint8_t display, uint8_t value)**<br>
+display functions<br>
+>**Parameter display**<br>
+>CONTRAST set diplay contrast<br>
+>**Parameter value**<br>
+>value -> set the contrast value from 0 to 64, default is 31
+
 **void fillcircle(int x, int y, int r, uint8_t colour)**<br>
 draw a filled circle<br>
 >**Parameters**<br>
