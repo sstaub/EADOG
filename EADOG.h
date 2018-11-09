@@ -369,6 +369,13 @@ protected:
     */
   void write_command(uint8_t command); // Write a command the LCD controller
 
+  /** Write a page of data to the LCD controller
+   *
+   * @param page page number from 0-7
+   *
+   */
+  void write_page(int page);
+
   // Variables
   uint8_t *font_buffer;
   uint8_t char_x;
@@ -379,6 +386,7 @@ protected:
   uint8_t _type;
   uint8_t *graphic_buffer;
   uint32_t graphic_buffer_size;
+  bool topview;
 
   };
 
