@@ -389,6 +389,20 @@ void EADOG::character(uint8_t x, uint8_t y, uint8_t c) {
   char_x += w;
   }
 
+unsigned int EADOG::textwidth(const char* text) {
+  unsigned int offset, pixels;
+  uint8_t *sign;
+
+  pixels = 0;
+  offset = font_buffer[0];
+
+  for (unsigned int i = 0; i < strlen(text); i++) {
+    sign = &font_buffer[((text[i] - 32) * offset) + 4];
+    pixels += sign[0];
+  }
+
+  return pixels;
+  }
 
 void EADOG::font(uint8_t *f) {
   font_buffer = f;

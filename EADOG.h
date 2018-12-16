@@ -320,6 +320,12 @@ public:
     */
   void font(uint8_t *f);
 
+  /** calculate pixel width of a string with current font
+    *
+    * @param text string
+    */
+  unsigned int textwidth(const char* text);
+
   /** print bitmap to buffer
     *
     * @param bm Bitmap in flash
