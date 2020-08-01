@@ -335,6 +335,11 @@ public:
     */
   void bitmap(Bitmap bm, int x, int y);
 
+
+  /** scroll the graphic buffer to right (move all pixels left by 1)
+    */
+  void scroll_right(int);
+
   // declarations
   SPI _spi;
   DigitalOut _reset;

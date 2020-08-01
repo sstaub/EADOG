@@ -206,6 +206,20 @@ void EADOG::pixel(int x, int y, uint8_t color) {
   else graphic_buffer[x + ((y / 8) * width)] |= (1 << (y % 8));   // set pixel
   }
 
+// scroll the screen to the right
+void EADOG::scroll_right(int pixels) {
+  for (int x = 0; x < width-pixels; x++) {
+    for (int y = 0; y < height-pixels; y++) {
+      if ((graphic_buffer[(x+pixels) + ((y / 8) * width)] & (1 << (y % 8))) == (1 << (y % 8))) {
+	pixel(x, y, 1);
+      } else {
+	pixel(x, y, 0);
+      }
+    }
+  }
+  fillrect(width - 1 - pixels, 0, width - 1, height - 1, 0);
+}
+
 void EADOG::point(int x, int y, uint8_t colour) {
   pixel(x, y, colour);
   if (auto_update) update();
