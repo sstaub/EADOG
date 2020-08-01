@@ -18,6 +18,8 @@
 #include "Small_7.h"
 
 EADOG::EADOG(PinName mosi, PinName sck, PinName reset, PinName a0, PinName cs, uint8_t type) : _spi(mosi, NC, sck), _reset(reset), _a0(a0), _cs(cs), _type(type), graphic_buffer() {
+  topview = false;
+
   if (_type == DOGM132) {
     width = 132;
     height = 32;
@@ -60,11 +62,13 @@ void EADOG::display(uint8_t display) {
     write_command(0xA6);
     }
   if (display == TOPVIEW) { // reverse orientation
+    topview = true;
     write_command(0xA0); // ADC normal
     write_command(0xC8); // reversed com31-com0
     update(); // update necessary
       }
   if (display == BOTTOM) { // normal orientation
+    topview = false;
     write_command(0xA1); // ADC reverse
     write_command(0xC0); // normal com0-com31
     update(); // update necessary
@@ -160,91 +164,30 @@ void EADOG::init() {
 
 // update lcd
 void EADOG::update() {
-  //page 0
-  write_command(0x00);      // set column low nibble 0
-  write_command(0x10);      // set column hi  nibble 0
-  write_command(0xB0);      // set page address  0
-  _a0 = 1;
-
-  for (int i = 0; i < width; i++) {
-    write_data(graphic_buffer[i]);
-    }
-
-  // page 1
-  write_command(0x00);      // set column low nibble 0
-  write_command(0x10);      // set column hi  nibble 0
-  write_command(0xB1);      // set page address  1
-  _a0 = 1;
-
-  for (int i = width; i < width * 2; i++) {
-    write_data(graphic_buffer[i]);
-    }
-
-  //page 2
-  write_command(0x00);      // set column low nibble 0
-  write_command(0x10);      // set column hi  nibble 0
-  write_command(0xB2);      // set page address  2
-  _a0 = 1;
-
-  for (int i = width * 2; i < width * 3; i++) {
-    write_data(graphic_buffer[i]);
-    }
-
-  //page 3
-  write_command(0x00);      // set column low nibble 0
-  write_command(0x10);      // set column hi  nibble 0
-  write_command(0xB3);      // set page address  3
-  _a0 = 1;
-
-  for (int i = width * 3; i < width * 4; i++) {
-    write_data(graphic_buffer[i]);
+  for (int i = 0; i < 4; i++) {
+    write_page(i);
     }
 
   if (_type == DOGM128 || _type == DOGL128) {
-    //page 4
-    write_command(0x00);      // set column low nibble 0
-    write_command(0x10);      // set column hi  nibble 0
-    write_command(0xB4);      // set page address  3
-    _a0 = 1;
-
-    for (int i = width * 4; i < width * 5; i++) {
-      write_data(graphic_buffer[i]);
-      }
-
-    //page 5
-    write_command(0x00);      // set column low nibble 0
-    write_command(0x10);      // set column hi  nibble 0
-    write_command(0xB5);      // set page address  3
-    _a0 = 1;
-
-    for (int i = width * 5; i < width * 6; i++) {
-      write_data(graphic_buffer[i]);
-      }
-
-    //page 6
-    write_command(0x00);      // set column low nibble 0
-    write_command(0x10);      // set column hi  nibble 0
-    write_command(0xB6);      // set page address  3
-    _a0 = 1;
-
-    for (int i = width * 6; i < width *7; i++) {
-      write_data(graphic_buffer[i]);
-      }
-
-    //page 7
-    write_command(0x00);      // set column low nibble 0
-    write_command(0x10);      // set column hi  nibble 0
-    write_command(0xB7);      // set page address  3
-    _a0 = 1;
-
-    for (int i = width * 7; i < width *8; i++) {
-      write_data(graphic_buffer[i]);
+    for (int i = 4; i < 8; i++) {
+      write_page(i);
       }
     }
 
   _cs = 0;
-
   }
+
+void EADOG::write_page(int page) {
+    write_command(topview ? 0x04 : 0x00);      // set column low nibble 0
+    write_command(0x10);      // set column hi  nibble 0
+    write_command(0xB0 + page);      // set page address  7
+    _a0 = 1;
+
+    for (int i = width * page; i < width * (page+1); i++) {
+      write_data(graphic_buffer[i]);
+      }
+  }
+
 void EADOG::update(uint8_t mode) {
   if (mode == MANUAL) auto_update = 0;
   if (mode == AUTO) auto_update = 1;
@@ -262,6 +205,20 @@ void EADOG::pixel(int x, int y, uint8_t color) {
   if (color == 0) graphic_buffer[x + ((y / 8) * width)] &= ~(1 << (y % 8)); // erase pixel
   else graphic_buffer[x + ((y / 8) * width)] |= (1 << (y % 8));   // set pixel
   }
+
+// scroll the screen to the right
+void EADOG::scroll_right(int pixels) {
+  for (int x = 0; x < width-pixels; x++) {
+    for (int y = 0; y < height-pixels; y++) {
+      if ((graphic_buffer[(x+pixels) + ((y / 8) * width)] & (1 << (y % 8))) == (1 << (y % 8))) {
+	pixel(x, y, 1);
+      } else {
+	pixel(x, y, 0);
+      }
+    }
+  }
+  fillrect(width - 1 - pixels, 0, width - 1, height - 1, 0);
+}
 
 void EADOG::point(int x, int y, uint8_t colour) {
   pixel(x, y, colour);
@@ -446,6 +403,20 @@ void EADOG::character(uint8_t x, uint8_t y, uint8_t c) {
   char_x += w;
   }
 
+unsigned int EADOG::textwidth(const char* text) {
+  unsigned int offset, pixels;
+  uint8_t *sign;
+
+  pixels = 0;
+  offset = font_buffer[0];
+
+  for (unsigned int i = 0; i < strlen(text); i++) {
+    sign = &font_buffer[((text[i] - 32) * offset) + 4];
+    pixels += sign[0];
+  }
+
+  return pixels;
+  }
 
 void EADOG::font(uint8_t *f) {
   font_buffer = f;

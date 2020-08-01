@@ -320,6 +320,12 @@ public:
     */
   void font(uint8_t *f);
 
+  /** calculate pixel width of a string with current font
+    *
+    * @param text string
+    */
+  unsigned int textwidth(const char* text);
+
   /** print bitmap to buffer
     *
     * @param bm Bitmap in flash
@@ -328,6 +334,11 @@ public:
     *
     */
   void bitmap(Bitmap bm, int x, int y);
+
+
+  /** scroll the graphic buffer to right (move all pixels left by 1)
+    */
+  void scroll_right(int);
 
   // declarations
   SPI _spi;
@@ -369,6 +380,13 @@ protected:
     */
   void write_command(uint8_t command); // Write a command the LCD controller
 
+  /** Write a page of data to the LCD controller
+   *
+   * @param page page number from 0-7
+   *
+   */
+  void write_page(int page);
+
   // Variables
   uint8_t *font_buffer;
   uint8_t char_x;
@@ -379,6 +397,7 @@ protected:
   uint8_t _type;
   uint8_t *graphic_buffer;
   uint32_t graphic_buffer_size;
+  bool topview;
 
   };
 
